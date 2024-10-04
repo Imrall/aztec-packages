@@ -4,6 +4,7 @@
 
 #include "barretenberg/vm/avm/trace/common.hpp"
 #include "barretenberg/vm/avm/trace/trace.hpp"
+#include "barretenberg/vm/constants.hpp"
 
 namespace bb::avm_trace {
 
@@ -35,6 +36,14 @@ template <typename FF_> VmPublicInputs<FF_> convert_public_inputs(std::vector<FF
     // we throw an exception
     if (public_inputs_vec.size() != PUBLIC_CIRCUIT_PUBLIC_INPUTS_LENGTH) {
         throw_or_abort("Public inputs vector is not of PUBLIC_CIRCUIT_PUBLIC_INPUTS_LENGTH");
+    }
+
+    // WARNING: this must be constrained by the kernel!
+    // Here this is just a sanity check to prevent generation of proofs that
+    // will be thrown out by the kernel anyway.
+    if (public_inputs_vec[L2_START_GAS_LEFT_PCPI_OFFSET] > MAX_L2_GAS_PER_ENQUEUED_CALL) {
+        throw_or_abort(
+            "Cannot allocate more than MAX_L2_GAS_PER_ENQUEUED_CALL to the AVM for execution of an enqueued call");
     }
 
     std::array<FF_, KERNEL_INPUTS_LENGTH>& kernel_inputs = std::get<KERNEL_INPUTS>(public_inputs);

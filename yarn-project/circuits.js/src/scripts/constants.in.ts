@@ -77,6 +77,7 @@ const CPP_CONSTANTS = [
   'MEM_TAG_U64',
   'MEM_TAG_U128',
   'MEM_TAG_FF',
+  'MAX_L2_GAS_PER_ENQUEUED_CALL',
 ];
 
 const PIL_CONSTANTS = [

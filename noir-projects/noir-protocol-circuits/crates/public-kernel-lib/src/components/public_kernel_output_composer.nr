@@ -134,6 +134,8 @@ impl PublicKernelOutputComposer {
             let gas_used = self.output_builder.end.gas_used;
             self.output_builder.end = PublicAccumulatedDataBuilder::empty();
             self.output_builder.end.gas_used = gas_used;
+            // TODO: consume all remaining gas on revert?
+            //self.output_builder.end.gas_used = self.output_builder.constants.tx_context.gas_settings.gas_limits;
         }
     }
 
@@ -143,6 +145,10 @@ impl PublicKernelOutputComposer {
 
     fn update_gas_used(&mut self, enqueued_call: VMCircuitPublicInputs, phase: u8) {
         let call_gas_used = enqueued_call.accumulated_data.gas_used;
+        // TODO: since we're using gas used here, this should be fine
+        // but if vm circuit public inputs change to use expose gas_left instead,
+        // then we need to compute the call's gas used as start_gas_left - end_gas_left
+        //let call_gas_used = enqueued_call.start_gas_left - enqueued_call.accumulated_data.gas_left;
         if phase == PublicKernelPhase.SETUP {
             self.output_builder.end_non_revertible.gas_used += call_gas_used;
         }
